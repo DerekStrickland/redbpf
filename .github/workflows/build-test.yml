@@ -11,10 +11,13 @@ on:
 
   # Run tests for any PRs.
   pull_request:
+    types:
+      - opened
+      - edited
 
 env:
-  BASE_IMAGE: ghcr.io/foniod/foniod-build
-  REDBPF_IMAGE_NAME: ghcr.io/foniod/redbpf-build
+  BASE_IMAGE: ghcr.io/${{ github.repository_owner }}/foniod-build
+  REDBPF_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/redbpf-build
 
 jobs:
   build-on-x86_64-ubuntu-2204:
@@ -30,6 +33,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Build RedBPF with the kernel headers on x86_64 Ubuntu 22.04
       run: |
@@ -70,6 +77,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Build RedBPF with the kernel headers on x86_64 Debian 11
       run: |
         docker run --privileged \
@@ -108,6 +119,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Build RedBPF with the kernel headers on x86_64 Fedora 36
       run: |
@@ -150,6 +165,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Build RedBPF with the kernel headers on x86_64 Alpine Edge
       run: |
         docker run --privileged \
@@ -163,7 +182,7 @@ jobs:
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
-          && cargo build --features="kernel5_8 llvm13" --examples'
+          && cargo build --features="kernel5_8 llvm14" --examples'
 
   build-on-x86_64-archlinux:
     runs-on: ubuntu-latest
@@ -178,6 +197,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Build RedBPF with the kernel headers on x86_64 Arch Linux
       run: |
@@ -218,6 +241,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Build RedBPF with the kernel headers on x86_64 Ubuntu 20.04 LTS
       run: |
         docker run --privileged \
@@ -245,6 +272,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Build RedBPF with the kernel headers on x86_64 Gentoo
       run: |
         docker run --privileged \
@@ -271,6 +302,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
@@ -320,6 +355,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
@@ -372,6 +411,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Set up QEMU
       id: qemu
       uses: docker/setup-qemu-action@v1
@@ -408,6 +451,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
@@ -447,6 +494,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Set up QEMU
       id: qemu
       uses: docker/setup-qemu-action@v1
@@ -482,6 +533,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
