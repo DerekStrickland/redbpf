@@ -290,6 +290,8 @@ jobs:
           && cargo build --examples'
 
   build-on-aarch64-ubuntu-2204:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm/v7 
     runs-on: ubuntu-latest
     steps:
     -
@@ -343,6 +345,8 @@ jobs:
           && cargo build --features=kernel5_8 --examples'
 
   build-on-aarch64-debian11:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm/v7 
     runs-on: ubuntu-latest
     steps:
     -
@@ -398,6 +402,8 @@ jobs:
   # Split aarch64-fedora36 into two parts because its running time exceeds 6
   # hours, the maximum time for build test.
   build-on-aarch64-fedora36-header:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm/v7 
     runs-on: ubuntu-latest
     steps:
     -
@@ -439,6 +445,8 @@ jobs:
           && cargo build --features=kernel5_8 --examples'
 
   build-on-aarch64-fedora36-vmlinux:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm/v7 
     runs-on: ubuntu-latest
     steps:
     -
@@ -481,6 +489,8 @@ jobs:
   build-on-aarch64-alpine-edge:
     name: Alpine Edge
     if: false
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm/v7 
     runs-on: ubuntu-latest
     steps:
     -
@@ -523,6 +533,8 @@ jobs:
           && cargo build --features="kernel5_8 llvm13" --examples'
 
   build-on-aarch64-ubuntu-2004:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm/v7 
     runs-on: ubuntu-latest
     steps:
     -
