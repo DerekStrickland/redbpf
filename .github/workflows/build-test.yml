@@ -291,7 +291,7 @@ jobs:
 
   build-on-aarch64-ubuntu-2204:
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7 
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -346,7 +346,7 @@ jobs:
 
   build-on-aarch64-debian11:
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7 
+      DOCKER_TARGET_PLATFORM: linux/arm64
     runs-on: ubuntu-latest
     steps:
     -
@@ -403,7 +403,7 @@ jobs:
   # hours, the maximum time for build test.
   build-on-aarch64-fedora36-header:
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7 
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -446,7 +446,7 @@ jobs:
 
   build-on-aarch64-fedora36-vmlinux:
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7 
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -490,7 +490,7 @@ jobs:
     name: Alpine Edge
     if: false
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7 
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -534,7 +534,7 @@ jobs:
 
   build-on-aarch64-ubuntu-2004:
     env:
-      DOCKER_TARGET_PLATFORM: linux/arm/v7 
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
