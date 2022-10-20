@@ -319,7 +319,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Ubuntu 22.04
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu22.04 \
@@ -372,7 +372,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Debian 11
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-debian11 \
@@ -427,7 +427,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Fedora 36
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-fedora36 \
@@ -468,7 +468,7 @@ jobs:
     -
       name: Build RedBPF with vmlinux on aarch64 Fedora 36
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-fedora36 \
@@ -510,7 +510,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Alpine Edge
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-alpine-edge \
@@ -554,7 +554,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Ubuntu 20.04 LTS
       run: |
-        docker run --privileged \
+        docker --platform linux/arm64 run --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu20.04 \
