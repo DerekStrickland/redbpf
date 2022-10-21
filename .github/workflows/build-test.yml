@@ -530,7 +530,7 @@ jobs:
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
-          && cargo build --features="kernel5_8 llvm13" --examples'
+          && cargo build --features="kernel5_8 llvm14" --examples'
 
   build-on-aarch64-ubuntu-2004:
     env:
