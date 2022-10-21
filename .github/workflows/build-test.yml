@@ -11,13 +11,16 @@ on:
 
   # Run tests for any PRs.
   pull_request:
+    types:
+      - opened
+      - edited
 
 env:
   BASE_IMAGE: ghcr.io/${{ github.repository_owner }}/foniod-build
   REDBPF_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/redbpf-build
 
 jobs:
-  build-on-x86_64-ubuntu-2104:
+  build-on-x86_64-ubuntu-2204:
     runs-on: ubuntu-latest
     steps:
     -
@@ -31,12 +34,16 @@ jobs:
         uname -a
         cat /etc/os-release
     -
-      name: Build RedBPF with the kernel headers on x86_64 Ubuntu 21.04
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
+      name: Build RedBPF with the kernel headers on x86_64 Ubuntu 22.04
       run: |
         docker run --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-x86_64-ubuntu21.04 \
+        $REDBPF_IMAGE_NAME:latest-x86_64-ubuntu22.04 \
         bash -c 'export KERNEL_SOURCE=$(echo /lib/modules/*) \
           && echo KERNEL_SOURCE=$KERNEL_SOURCE \
           && cargo clean \
@@ -44,12 +51,12 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
     -
-      name: Build RedBPF with vmlinux on x86_64 Ubuntu 21.04
+      name: Build RedBPF with vmlinux on x86_64 Ubuntu 22.04
       run: |
         docker run --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-x86_64-ubuntu21.04 \
+        $REDBPF_IMAGE_NAME:latest-x86_64-ubuntu22.04 \
         /bin/bash -c 'export REDBPF_VMLINUX=/boot/vmlinux \
           && cargo clean \
           && cargo build \
@@ -69,6 +76,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Build RedBPF with the kernel headers on x86_64 Debian 11
       run: |
@@ -95,7 +106,7 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
 
-  build-on-x86_64-fedora35:
+  build-on-x86_64-fedora36:
     runs-on: ubuntu-latest
     steps:
     -
@@ -109,12 +120,16 @@ jobs:
         uname -a
         cat /etc/os-release
     -
-      name: Build RedBPF with the kernel headers on x86_64 Fedora 35
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
+      name: Build RedBPF with the kernel headers on x86_64 Fedora 36
       run: |
         docker run --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-x86_64-fedora35 \
+        $REDBPF_IMAGE_NAME:latest-x86_64-fedora36 \
         /bin/bash -c 'export KERNEL_SOURCE=$(echo /lib/modules/*) \
           && echo KERNEL_SOURCE=$KERNEL_SOURCE \
           && cargo clean \
@@ -122,20 +137,20 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
     -
-      name: Build RedBPF with vmlinux on x86_64 Fedora 35
+      name: Build RedBPF with vmlinux on x86_64 Fedora 36
       run: |
         docker run --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-x86_64-fedora35 \
+        $REDBPF_IMAGE_NAME:latest-x86_64-fedora36 \
         /bin/bash -c 'export REDBPF_VMLINUX=/boot/vmlinux \
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
 
-  build-on-x86_64-alpine315:
-    name: Alpine 3.15 is disabled temporarily (LLVM13 unsupported)
+  build-on-x86_64-alpine-edge:
+    name: Alpine Edge
     if: false
     runs-on: ubuntu-latest
     steps:
@@ -150,19 +165,24 @@ jobs:
         uname -a
         cat /etc/os-release
     -
-      name: Build RedBPF with the kernel headers on x86_64 Alpine 3.15
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
+      name: Build RedBPF with the kernel headers on x86_64 Alpine Edge
       run: |
         docker run --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-x86_64-alpine3.15 \
+        $REDBPF_IMAGE_NAME:latest-x86_64-alpine-edge \
         /bin/bash -c 'export KERNEL_SOURCE=$(echo /lib/modules/*) \
           && echo KERNEL_SOURCE=$KERNEL_SOURCE \
+          && export RUST_BACKTRACE=1 \
           && export RUSTFLAGS=-Ctarget-feature=-crt-static \
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
-          && cargo build --features=kernel5_8 --examples'
+          && cargo build --features="kernel5_8 llvm14" --examples'
 
   build-on-x86_64-archlinux:
     runs-on: ubuntu-latest
@@ -178,6 +198,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Build RedBPF with the kernel headers on x86_64 Arch Linux
       run: |
         docker run --privileged \
@@ -189,7 +213,7 @@ jobs:
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
-          && cargo build --features=kernel5_8 --examples'
+          && REDBPF_VMLINUX=/boot/vmlinux cargo build --features=kernel5_8 --examples'
     -
       name: Build RedBPF with vmlinux on x86_64 Arch Linux
       run: |
@@ -216,6 +240,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Build RedBPF with the kernel headers on x86_64 Ubuntu 20.04 LTS
       run: |
@@ -244,6 +272,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Build RedBPF with the kernel headers on x86_64 Gentoo
       run: |
         docker run --privileged \
@@ -257,7 +289,9 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --examples'
 
-  build-on-aarch64-ubuntu-2104:
+  build-on-aarch64-ubuntu-2204:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -270,6 +304,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
@@ -281,12 +319,12 @@ jobs:
       name: Available platforms
       run: echo ${{ steps.qemu.outputs.platforms }}
     -
-      name: Build RedBPF with the kernel headers on aarch64 Ubuntu 21.04
+      name: Build RedBPF with the kernel headers on aarch64 Ubuntu 22.04
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu21.04 \
+        $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu22.04 \
         /bin/bash -c 'export KERNEL_SOURCE=$(echo /lib/modules/*) \
           && echo KERNEL_SOURCE=$KERNEL_SOURCE \
           && cargo clean \
@@ -294,12 +332,12 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
     -
-      name: Build RedBPF with vmlinux on aarch64 Ubuntu 21.04
+      name: Build RedBPF with vmlinux on aarch64 Ubuntu 22.04
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu21.04 \
+        $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu22.04 \
         /bin/bash -c 'export REDBPF_VMLINUX=/boot/vmlinux-btf \
           && cargo clean \
           && cargo build \
@@ -307,6 +345,8 @@ jobs:
           && cargo build --features=kernel5_8 --examples'
 
   build-on-aarch64-debian11:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64
     runs-on: ubuntu-latest
     steps:
     -
@@ -319,6 +359,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
@@ -332,7 +376,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Debian 11
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-debian11 \
@@ -345,7 +389,7 @@ jobs:
     -
       name: Build RedBPF with vmlinux on aarch64 Debian 11
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-debian11 \
@@ -355,9 +399,11 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
 
-  # Split aarch64-fedora35 into two parts because its running time exceeds 6
+  # Split aarch64-fedora36 into two parts because its running time exceeds 6
   # hours, the maximum time for build test.
-  build-on-aarch64-fedora35-header:
+  build-on-aarch64-fedora36-header:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -371,6 +417,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Set up QEMU
       id: qemu
       uses: docker/setup-qemu-action@v1
@@ -381,12 +431,12 @@ jobs:
       name: Available platforms
       run: echo ${{ steps.qemu.outputs.platforms }}
     -
-      name: Build RedBPF with the kernel headers on aarch64 Fedora 35
+      name: Build RedBPF with the kernel headers on aarch64 Fedora 36
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-aarch64-fedora35 \
+        $REDBPF_IMAGE_NAME:latest-aarch64-fedora36 \
         /bin/bash -c 'export KERNEL_SOURCE=$(echo /lib/modules/*) \
           && echo KERNEL_SOURCE=$KERNEL_SOURCE \
           && cargo clean \
@@ -394,7 +444,9 @@ jobs:
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
 
-  build-on-aarch64-fedora35-vmlinux:
+  build-on-aarch64-fedora36-vmlinux:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -408,6 +460,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Set up QEMU
       id: qemu
       uses: docker/setup-qemu-action@v1
@@ -418,21 +474,23 @@ jobs:
       name: Available platforms
       run: echo ${{ steps.qemu.outputs.platforms }}
     -
-      name: Build RedBPF with vmlinux on aarch64 Fedora 35
+      name: Build RedBPF with vmlinux on aarch64 Fedora 36
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-aarch64-fedora35 \
+        $REDBPF_IMAGE_NAME:latest-aarch64-fedora36 \
         /bin/bash -c 'export REDBPF_VMLINUX=/boot/vmlinux-btf \
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
           && cargo build --features=kernel5_8 --examples'
 
-  build-on-aarch64-alpine315:
-    name: Alpine 3.15 is disabled temporarily (LLVM13 unsupported)
+  build-on-aarch64-alpine-edge:
+    name: Alpine Edge
     if: false
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -446,6 +504,10 @@ jobs:
         uname -a
         cat /etc/os-release
     -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
+    -
       name: Set up QEMU
       id: qemu
       uses: docker/setup-qemu-action@v1
@@ -456,21 +518,23 @@ jobs:
       name: Available platforms
       run: echo ${{ steps.qemu.outputs.platforms }}
     -
-      name: Build RedBPF with the kernel headers on aarch64 Alpine 3.15
+      name: Build RedBPF with the kernel headers on aarch64 Alpine Edge
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
-        $REDBPF_IMAGE_NAME:latest-aarch64-alpine3.15 \
+        $REDBPF_IMAGE_NAME:latest-aarch64-alpine-edge \
         /bin/bash -c 'export KERNEL_SOURCE=$(echo /lib/modules/*) \
           && echo KERNEL_SOURCE=$KERNEL_SOURCE \
           && export RUSTFLAGS=-Ctarget-feature=-crt-static \
           && cargo clean \
           && cargo build \
           && cargo build --bin cargo-bpf \
-          && cargo build --features=kernel5_8 --examples'
+          && cargo build --features="kernel5_8 llvm14" --examples'
 
   build-on-aarch64-ubuntu-2004:
+    env:
+      DOCKER_TARGET_PLATFORM: linux/arm64 
     runs-on: ubuntu-latest
     steps:
     -
@@ -481,6 +545,10 @@ jobs:
       run: |
         uname -a
         cat /etc/os-release
+    -
+      name: Set image name lowercase
+      run: |
+        echo "REDBPF_IMAGE_NAME=${REDBPF_IMAGE_NAME,,}" >>${GITHUB_ENV}
     -
       name: Set up QEMU
       id: qemu
@@ -498,7 +566,7 @@ jobs:
     -
       name: Build RedBPF with the kernel headers on aarch64 Ubuntu 20.04 LTS
       run: |
-        docker run --privileged \
+        docker run --platform linux/arm64 --privileged \
         -v $PWD:/build \
         -w /build \
         $REDBPF_IMAGE_NAME:latest-aarch64-ubuntu20.04 \
@@ -535,20 +603,20 @@ jobs:
     runs-on: ubuntu-latest
     if: startsWith( github.ref, 'refs/tags/v')
     needs:
-    - build-on-x86_64-ubuntu-2104
+    - build-on-x86_64-ubuntu-2204
     - build-on-x86_64-debian11
-    - build-on-x86_64-fedora35
-    # - build-on-x86_64-alpine315
+    - build-on-x86_64-fedora36
+    - build-on-x86_64-alpine-edge
     - build-on-x86_64-archlinux
     - build-on-x86_64-ubuntu-2004
     - build-on-x86_64-gentoo
     - build-on-x86_64-nix-stable
     - build-on-x86_64-nix-unstable
-    - build-on-aarch64-ubuntu-2104
+    - build-on-aarch64-ubuntu-2204
     - build-on-aarch64-debian11
-    - build-on-aarch64-fedora35-header
-    - build-on-aarch64-fedora35-vmlinux
-    # - build-on-aarch64-alpine315
+    - build-on-aarch64-fedora36-header
+    - build-on-aarch64-fedora36-vmlinux
+    - build-on-aarch64-alpine-edge
     - build-on-aarch64-ubuntu-2004
 
     steps:

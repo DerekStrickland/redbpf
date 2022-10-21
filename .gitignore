@@ -6,3 +6,4 @@ cscope*
 lsp-target
 .direnv
 /result
+.vagrant

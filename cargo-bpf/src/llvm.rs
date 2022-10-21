@@ -22,8 +22,10 @@ second.
 cfg_if::cfg_if! {
     if #[cfg(feature = "llvm-sys-130")] {
         use llvm_sys_130 as llvm_sys;
+    } else if #[cfg(feature = "llvm-sys-140")] {
+        use llvm_sys_140 as llvm_sys;
     } else {
-        compile_error!("Specify --features llvm13");
+        compile_error!("Specify --features llvm140 or llvm130");
     }
 }
 use anyhow::{anyhow, Result};
